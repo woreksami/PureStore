@@ -72,9 +72,18 @@ jobs:
       id: date
       run: echo "date=$(date +'%Y.%m.%d-%H%M')" >> $GITHUB_OUTPUT
     
+    - name: Collect build artifacts
+      run: |
+        mkdir -p release_files
+        find _build -type f -exec cp {} release_files/ \; 2>/dev/null || true
+        find PureHelper/.theos/packages -name "*.deb" -exec cp {} release_files/ \; 2>/dev/null || true
+        find PureStore/.theos/packages -name "*.deb" -exec cp {} release_files/ \; 2>/dev/null || true
+        find PureStoreLite/.theos/packages -name "*.deb" -exec cp {} release_files/ \; 2>/dev/null || true
+        ls -la release_files/
+    
     - name: Create Release
-      if: github.ref == 'refs/heads/main'
-      uses: softprops/action-gh-release@v1
+      if: github.ref == 'refs/heads/main' && hashFiles('release_files/*') != ''
+      uses: softprops/action-gh-release@v2
       with:
         tag_name: build-${{ steps.date.outputs.date }}
         name: Build ${{ steps.date.outputs.date }}
@@ -84,29 +93,19 @@ jobs:
           ## Build Outputs
           - PureStore.tar - Main application archive
           - .deb packages - For jailbroken devices
-          - .ipa files - Installer packages (if victim IPA provided)
-        files: |
-          _build/*
-          PureHelper/.theos/packages/*.deb
-          PureStore/.theos/packages/*.deb
-          PureStoreLite/.theos/packages/*.deb
+          - .ipa files - Installer packages (if available)
+        files: release_files/*
         draft: false
         prerelease: false
-        fail_on_unmatched_files: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Create Tagged Release
       if: startsWith(github.ref, 'refs/tags/')
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
-        files: |
-          _build/*
-          PureHelper/.theos/packages/*.deb
-          PureStore/.theos/packages/*.deb
-          PureStoreLite/.theos/packages/*.deb
+        files: release_files/*
         draft: false
         prerelease: false
-        fail_on_unmatched_files: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
