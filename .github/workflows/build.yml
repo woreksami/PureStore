@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-14
     
     steps:
     - name: Checkout
@@ -19,13 +19,14 @@ jobs:
     
     - name: Setup Theos
       run: |
+        export THEOS=/opt/theos
         git clone --recursive https://github.com/theos/theos.git $THEOS
         echo "THEOS=$THEOS" >> $GITHUB_ENV
-      env:
-        THEOS: /opt/theos
     
     - name: Build
-      run: make package
+      run: |
+        export THEOS=/opt/theos
+        make package
     
     - name: Upload IPA
       uses: actions/upload-artifact@v4
