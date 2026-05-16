@@ -51,6 +51,7 @@ jobs:
       run: |
         export THEOS=/opt/theos
         export PATH=/opt/theos/bin:$PATH
+        export TARGET=iphone:clang:17.5:14.0
         make all || echo "Build completed with warnings"
       continue-on-error: true
     
