@@ -68,17 +68,45 @@ jobs:
           PureStore/.theos/packages/
           PureStoreLite/.theos/packages/
     
+    - name: Get current date
+      id: date
+      run: echo "date=$(date +'%Y.%m.%d-%H%M')" >> $GITHUB_OUTPUT
+    
     - name: Create Release
-      if: startsWith(github.ref, 'refs/tags/')
+      if: github.ref == 'refs/heads/main'
       uses: softprops/action-gh-release@v1
       with:
+        tag_name: build-${{ steps.date.outputs.date }}
+        name: Build ${{ steps.date.outputs.date }}
+        body: |
+          Automated build from commit ${{ github.sha }}
+          
+          ## Build Outputs
+          - PureStore.tar - Main application archive
+          - .deb packages - For jailbroken devices
+          - .ipa files - Installer packages (if victim IPA provided)
         files: |
-          _build/*.tar
-          _build/*.ipa
+          _build/*
           PureHelper/.theos/packages/*.deb
           PureStore/.theos/packages/*.deb
           PureStoreLite/.theos/packages/*.deb
         draft: false
         prerelease: false
+        fail_on_unmatched_files: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Create Tagged Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          _build/*
+          PureHelper/.theos/packages/*.deb
+          PureStore/.theos/packages/*.deb
+          PureStoreLite/.theos/packages/*.deb
+        draft: false
+        prerelease: false
+        fail_on_unmatched_files: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
