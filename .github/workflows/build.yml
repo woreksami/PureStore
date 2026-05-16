@@ -19,26 +19,47 @@ jobs:
     
     - name: Setup Theos
       run: |
-        export THEOS=/opt/theos
-        git clone --recursive https://github.com/theos/theos.git $THEOS
-        echo "THEOS=$THEOS" >> $GITHUB_ENV
+        sudo mkdir -p /opt
+        sudo git clone --recursive https://github.com/theos/theos.git /opt/theos
+        echo "THEOS=/opt/theos" >> $GITHUB_ENV
     
-    - name: Build
+    - name: Install Dependencies
+      run: |
+        brew install ldid
+        
+    - name: Build Pwnify
+      run: |
+        cd Pwnify
+        make
+        sudo cp pwnify /usr/local/bin/
+        cd ..
+    
+    - name: Build All
       run: |
         export THEOS=/opt/theos
-        make package
+        make all
     
-    - name: Upload IPA
+    - name: Upload Build Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: PureStore-IPA
-        path: packages/*.ipa
+        name: PureStore-Build
+        path: |
+          _build/*.tar
+          _build/*.ipa
+          PureHelper/.theos/packages/*.deb
+          PureStore/.theos/packages/*.deb
+          PureStoreLite/.theos/packages/*.deb
     
     - name: Create Release
       if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v1
       with:
-        files: packages/*.ipa
+        files: |
+          _build/*.tar
+          _build/*.ipa
+          PureHelper/.theos/packages/*.deb
+          PureStore/.theos/packages/*.deb
+          PureStoreLite/.theos/packages/*.deb
         draft: false
         prerelease: false
       env:
