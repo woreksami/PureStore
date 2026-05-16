@@ -1,0 +1,9 @@
+Package: com.purestore.app
+Name: PureStore
+Version: 1.0.0
+Architecture: iphoneos-arm
+Description: PureStore — Pure installs. Pure control. Pure you.
+  A clean, themeable IPA installer with custom themes and user scripts.
+Maintainer: PureStore
+Author: PureStore (based on TrollStore by opa334)
+Section: Utilities
