@@ -25,6 +25,14 @@ jobs:
         echo "THEOS=/opt/theos" >> $GITHUB_ENV
         echo "PATH=/opt/theos/bin:$PATH" >> $GITHUB_ENV
     
+    - name: Setup iOS SDK
+      run: |
+        # Use the Xcode SDK that's already installed
+        sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+        SDKVERSION=$(xcrun --sdk iphoneos --show-sdk-version)
+        echo "SDKVERSION=$SDKVERSION" >> $GITHUB_ENV
+        echo "Using iOS SDK version: $SDKVERSION"
+    
     - name: Install Dependencies
       run: |
         brew install ldid make
