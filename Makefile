@@ -1,13 +1,13 @@
 TOPTARGETS := all clean update
 
-$(TOPTARGETS): pre_build make_fastPathSign make_roothelper make_purestore make_trollhelper_embedded make_trollhelper_package assemble_purestore build_installer15 build_installer64e make_purestore_lite
+$(TOPTARGETS): pre_build make_roothelper make_purestore make_trollhelper_embedded make_trollhelper_package assemble_purestore build_installer15 build_installer64e make_purestore_lite
 
 pre_build:
 	@rm -rf ./_build 2>/dev/null || true
 	@mkdir -p ./_build
 
 make_fastPathSign:
-	@$(MAKE) -C ./Exploits/fastPathSign $(MAKECMDGOALS)
+	@echo "Skipping fastPathSign (incompatible with current ChOma version)"
 
 make_roothelper:
 	@$(MAKE) -C ./RootHelper DEBUG=0 $(MAKECMDGOALS)
